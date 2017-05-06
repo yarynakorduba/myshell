@@ -7,13 +7,9 @@
 #include <cstring>
 #include <vector>
 #include <boost/bind.hpp>
-#include <sys/stat.h>
-#include <fstream>
-#include <errno.h>
+
 
 using namespace std;
-
-#define PATH_MAX 4096
 
 int mpwd(char** argv){
     if(argv[1] == NULL){
@@ -44,15 +40,19 @@ int mcd(char** argv){
     }
     return 0;
 }
-void mexit(char** argv){
-    if((string(argv[1])=="-h")||(string(argv[1])=="--help")){
-        cout<<"mexit will finish your program"<<endl;
+void mexit(char** argv, int num){
+    if(num != 1){
+        if((string(argv[1])=="-h")||(string(argv[1])=="--help")){
+            cout<<"mexit will finish your program"<<endl;
 
-    } else{
-        int castInputToInt;
-        stringstream ss(argv[1]);
-        ss >> castInputToInt;
-        exit(castInputToInt);
+        }else{
+            int castInputToInt;
+            stringstream ss(argv[1]);
+            ss >> castInputToInt;
+            exit(castInputToInt);
+        }
+    }else{
+        exit(0);
     }
 }
 
@@ -99,7 +99,7 @@ int main(int argc, char* argv[], char**env)
             mcd(argv);
         }
         else if((string(prog)=="mexit")) {
-            mexit(argv);
+            mexit(argv, i);
         }
         else{
             pid_t kidpid = fork();
