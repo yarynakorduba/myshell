@@ -46,7 +46,7 @@ int ls_help() {
 string toStr(char arr[]) {
     int pointer = 0;
 
-    while (arr[pointer] != NULL) {
+    while (arr[pointer]) {
         pointer++;
     }
     std::string str;
@@ -78,12 +78,16 @@ void f_properties(const char* filename) {
     cout << filename;
     stat(filename, &attrib);
     foo = gmtime(&(attrib.st_mtime));
-    printf("\ndate of modification: %d/", foo->tm_year+1900); //tm_year gives year from 1900
-    printf("%d/", foo->tm_mon+1); //tm_mon has range (0, 11)
-    printf("%d ", foo->tm_mday);
-    printf("%d:", foo->tm_hour);
-    printf("%d\n", foo->tm_min);
-    printf("Size: %d bytes\n\n", attrib.st_size);
+    int byt_format = printf("\n%d  ", (int)attrib.st_size);
+    printf("%.*s", (14-byt_format), "            ");
+    printf("%d/", foo->tm_year+1900); //tm_year gives year from 1900
+    int mon_format = printf("%d/", foo->tm_mon+1)+\
+            printf("%d ", foo->tm_mday); //tm_mon has range (0, 11)
+    printf("%.*s", (8-mon_format), "         ");
+    int hou_format = printf("%d:", foo->tm_hour) + \
+            printf("%d ", foo->tm_min);
+    printf("%.*s", (8-hou_format), "      ");
+
 }
 
 
@@ -168,7 +172,7 @@ int main(int num, char** argv){
                 if(dptr->d_name[0] != '.') {
 
                     int pointer = 0;
-                    while (dptr->d_name[pointer] != NULL) {
+                    while (dptr->d_name[pointer]) {
                         pointer++;
                     }
 
