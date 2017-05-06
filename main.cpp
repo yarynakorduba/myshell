@@ -101,8 +101,7 @@ int main(int argc, char* argv[], char**env)
         else if((string(prog)=="mexit")) {
             mexit(argv);
         }
-        else if((string(prog)=="mls")||(string(prog)=="mrv")||(string(prog)=="mrm")||
-                (string(prog)=="mmkdir")||(string(prog)=="mcpp")){
+        else{
             pid_t kidpid = fork();
 
             if (kidpid < 0)
@@ -144,9 +143,6 @@ int main(int argc, char* argv[], char**env)
                     return -1;
                 }
             }
-        } else {
-            cout<<argv[0]<<" :command not found"<<endl;
-            //continue;
         }
 
         cout << "\n";
