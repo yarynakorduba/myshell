@@ -55,6 +55,46 @@ void mexit(char** argv, int num){
         exit(0);
     }
 }
+void globalHelp(){
+    cout<<"You can use the following commands: \n"
+            "\n"
+            "mrm\n"
+            "\n"
+            "The order of the arguments is not significant \n"
+            "\n"
+            "Examples and explaining: \n"
+            "\n"
+            "mrm -f -R name_Of_Folder_or_File -- will remove your folder(even if it isn't empty) or file "
+            "without asking the permission. \n"
+            "mrm -f name_Of_File -- will remove only your file without asking the permission. Can't remove folder. \n"
+            "mrm name_Of_File -- will remove only your file with asking the permission. Can't remove folder. \n"
+            "mrm -R name_Of_Folder_or_File -- will remove your folder (even if it isn't empty) "
+            "file with asking the permission.\n"
+            "\n"
+            "mrv\n"
+            "\n"
+            "The order of the arguments is not significant \n"
+            "\n"
+            "Examples and explaining: \n"
+            "\n"
+            "mrv current_name_of_file desired_name_of_file -- will rename your file with asking the permission if "
+            "file that has the same name as desired_name_of_file already exist\n"
+            "mrv -f current_name_of_file desired_name_of_file -- will rename your file without asking the permission if "
+            "file that has the same name as desired_name_of_file already exist\n"
+            "mrv current_name_of_file name_of_directory -- will remove your file to the desired directory "
+            "with asking the permission if file already exist in this directory\n"
+            "mrv -f current_name_of_file name_of_directory -- will remove your file to the desired directory "
+            "without asking the permission if file already exist in this directory\n"
+            "\n"
+            "mmkdir\n"
+            "\n"
+            "mmkdir will create new directory\n"
+            "\n"
+            "mcp\n"
+            "\n"
+        <<endl;
+
+}
 
 
 
@@ -101,6 +141,9 @@ int main(int argc, char* argv[], char**env)
         else if((string(prog)=="mexit")) {
             mexit(argv, i);
         }
+        else if((string(prog)=="help")) {
+            globalHelp();
+        }
         else{
             pid_t kidpid = fork();
 
@@ -112,17 +155,6 @@ int main(int argc, char* argv[], char**env)
             else if (kidpid == 0)
             {
                 // I am the child.
-
-                //const char* a = prog;
-                //const char* b = "/home/yuriy/CLionProjects/myRV/";
-                //const char* b = "";
-                //char* p=new char[strlen(b)+strlen(a)+1];
-                //char* c=new char[strlen(a)+1];
-                //strcat(p,b);
-                //strcat(p,a);
-                //strcpy(c,p);
-                //printf("Name %s\n", a);
-                //printf("Path %s\n", getenv("PATH"));
 
                 //puts(prog);
                 int err = execvp (prog, argv);
