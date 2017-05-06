@@ -1,0 +1,38 @@
+#IncludeRegexLine: ^[ 	]*#[ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/yuriy/CLionProjects/myLS/main.cpp
+iostream
+-
+unistd.h
+-
+sys/wait.h
+-
+limits.h
+-
+dirent.h
+-
+sstream
+-
+cstring
+-
+vector
+-
+streambuf
+-
+sys/types.h
+-
+sys/stat.h
+-
+sys/stat.h
+-
+algorithm
+-
+stdio.h
+-
+

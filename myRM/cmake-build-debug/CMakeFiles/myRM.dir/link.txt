@@ -1,0 +1,1 @@
+/usr/bin/c++   -g   CMakeFiles/myRM.dir/main.cpp.o  -o myRM 
