@@ -8,6 +8,8 @@
 #include <list>
 #include <algorithm>
 
+#include "sh_tools.h"
+
 
 using namespace std;
 
@@ -39,7 +41,8 @@ int main(int num, char** argv){
 
     int globalIterOfArgv = 1;
     int stateOfDir = findDir(num, argv);
-    char* curr = get_current_dir_name();
+	string cur_dir = my_get_current_dir_name(); // Див. комент щодо цієї ф-ції в myLS
+    const char* curr = cur_dir.data();
 
     if((num == 0)||(num == 1)) {
         cout << "Too few arguments" << endl;
@@ -57,13 +60,21 @@ int main(int num, char** argv){
                 "mrv -f current_name_of_file name_of_directory -- will remove your file to the desired directory "
                 "without asking the permission if file already exist in this directory\n"
             <<endl;
-
+		//! Вивели хелп і виходимо:
+		return 0;
     }
+	//! УВАГА! Структура коду потворна -- просканувати опції слід на початку, зберегти у якихось 
+	//! прапорцях, а вже потім  -- використовувати їх. Імена файлів, отримані при тому, скласти окремо. 
+	//! От як Ваш же stateOfDir.
+	//! Див, також  mls (там не ідеально, але таки краще). 
+	//! Плюс, копіпасти стільки...
+	
     else if (findF(num, argv) && (stateOfDir != -1)){
         int iterOfArgvWithF = globalIterOfArgv;
         while(iterOfArgvWithF != num){
             if((string(argv[iterOfArgvWithF]) != "-f")||(iterOfArgvWithF != stateOfDir)){
-                chdir(curr);
+                chdir(curr); 
+				//! От що за імена?!
                 const char* a = argv[iterOfArgvWithF];
                 const char* b = argv[findDir(num, argv)];
                 const char* d = "/";

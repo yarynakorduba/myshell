@@ -1,19 +1,21 @@
 #include <iostream>
 #include <unistd.h>
 #include <sys/wait.h>
-#include <limits.h>
+//#include <limits.h>
 #include <dirent.h>
-#include <sstream>
+//#include <sstream>
 #include <cstring>
 #include <vector>
-#include <streambuf>
+//#include <streambuf>
 #include <sys/types.h>
-#include <sys/stat.h>
+//#include <sys/stat.h>
 #include <sys/stat.h>
 #include <algorithm>
 #include <stdio.h>
 //#include <time.h>
 //#include <stdlib.h>
+
+#include "sh_tools.h"
 
 using namespace std;
 
@@ -44,24 +46,29 @@ int ls_help() {
 
 
 string toStr(char arr[]) {
-    int pointer = 0;
+	//! УВАГА! От навіщо так складно?!
+	return string(arr); // Тут і string зайвий, але хай буде.
+	//Старий код залишаю -- щоб ви його бачили, стріть потім -- не варто такі залишки тримати
+	// в коментах -- для того і є git чи інші системи контролю версій.	
+/*
+	int pointer = 0;
 
-    while (arr[pointer]) {
+    while (arr[pointer] != NULL) {
         pointer++;
     }
     std::string str;
 
     str.append(arr, 0, pointer);
     return str;
+*/	
 }
 
-bool is_dir(const char* path) {
-    struct stat buf;
-    stat(path, &buf);
-    return S_ISDIR(buf.st_mode);
-}
-
-bool mySizeFunction (std::__cxx11::basic_string<char> f1, std::__cxx11::basic_string<char> f2) {
+//! УВАГА
+// Хто і звідки цей жах передер?! Виясніть, що за речовини
+// він чи вона вживає (нюхає? коле?) і більше їх йому не давайте!
+// (Так, я знаю, де автор міг це побачити, але навіщо передер внутрішні назви класів?!)
+//bool mySizeFunction (std::__cxx11::basic_string<char> f1, std::__cxx11::basic_string<char> f2) {
+bool mySizeFunction (const std::string& f1, const std::string& f2) {
     struct stat attrib1;
     struct stat attrib2;
     stat(f1.data(), &attrib1);
@@ -69,7 +76,7 @@ bool mySizeFunction (std::__cxx11::basic_string<char> f1, std::__cxx11::basic_st
     return (attrib1.st_size > attrib2.st_size);
 }
 
-bool myMtimeFunction(std::__cxx11::basic_string<char> f1, std::__cxx11::basic_string<char> f2) {
+bool myMtimeFunction(const std::string& f1, const std::string& f2) {
     struct stat attrib1;
     struct stat attrib2;
     stat(f1.data(), &attrib1);
@@ -84,25 +91,25 @@ void f_properties(const char* filename) {
     cout << filename;
     stat(filename, &attrib);
     foo = gmtime(&(attrib.st_mtime));
-    int byt_format = printf("\n%d  ", (int)attrib.st_size);
-    printf("%.*s", (14-byt_format), "            ");
-    printf("%d/", foo->tm_year+1900); //tm_year gives year from 1900
-    int mon_format = printf("%d/", foo->tm_mon+1)+\
-            printf("%d ", foo->tm_mday); //tm_mon has range (0, 11)
-    printf("%.*s", (8-mon_format), "         ");
-    int hou_format = printf("%d:", foo->tm_hour) + \
-            printf("%d ", foo->tm_min);
-    printf("%.*s", (8-hou_format), "      ");
 
+	//! Ваш код був, безперечно, оригінальним, але навіщо винаходити велосипеди? ;-)
+	printf("\n%-14lld  ", attrib.st_size); //! Не до інта обрізати, а %lld -- long long int
+    printf("%d/%02d/%02d  ", foo->tm_year+1900, foo->tm_mon+1, foo->tm_mday); //tm_year gives year from 1900
+    printf("%02d:%02d  ", foo->tm_hour, foo->tm_min);
 }
 
 
 int main(int num, char** argv){
-    char* curr_dir = get_current_dir_name();
     DIR *dp = NULL;
     struct dirent *dptr = NULL;
     unsigned int count = 0;
-    dp = opendir((const char*)curr_dir);
+    dp = opendir( my_get_current_dir_name().data() ); //! УВАГА -- string, що повернула ф-ці
+				// повинен прожити довше, ніж той, хто користується вказівником, 
+				// повернутим data(), тому варіант: 
+				// const char* curr_dir = my_get_current_dir_name().data();
+				// dp = opendir( curr_dir );
+				// буде невірним!
+
 
     string mask_trigger(" ");            //TRIGGER FOR EXTENTIONS
     int l_trigger = 0;                        //TRIGGER FOR PROPERTIES
@@ -110,53 +117,57 @@ int main(int num, char** argv){
     int r_trigger = 0;
     int error_trigger = 0;
 
+	
+    for (int i=0; i<num; i++) {//TRIGGERS TAKE VALUES
 
-        for (int i=0; i<num; i++) {//TRIGGERS TAKE VALUES
+        string elm(argv[i]); //! Small optimization
+        cout<<elm<<endl;
 
-            string elm(" ");
-            elm = argv[i];
-
-            if (elm == "-l") {
-                l_trigger = 1;
-            }
-            else if (elm[0] == '/') {
-                dp=opendir((const char*)argv[i]);}
+        if (elm == "-l") {
+            l_trigger = 1;
+        }
+        else if (elm[0] == '/') {
+            dp=opendir((const char*)argv[i]);}
 
 
-            else if (elm[0] == '.') {
-                mask_trigger = elm;
-            }
-
-            else if (elm.substr(0, 6) == "--sort") {
-
-                if ((elm.substr(6, 2) == "=N") || (elm.size() == 6)) {
-                    S_size_trigger = 1;}
-
-                else if (elm.substr(6, 2) == "=S") {
-                    S_size_trigger = 2;
-                }
-
-                else if (elm.substr(6, 2) == "=t") {
-                    S_size_trigger = 3;
-                }
-
-            }
-
-            else if (elm == "-r") {
-                r_trigger = 1;
-            }
-            else if ((elm == "-h") || (elm == "--help")) {
-                return ls_help();}
-
-            else if (is_dir(('/' + elm).c_str())) {
-                error_trigger = 2;
-            }else if (elm != "mls"){
-                error_trigger = 1;
-
-            }
+        else if (elm[0] == '.') {
+            mask_trigger = elm;
         }
 
+        else if (elm.substr(0, 6) == "--sort") {
+			//! УВАГА Рішення із тригерами -- хороше, але ось тут краще enum використати
+			//! замість магічних констант 1, 2, 3:
+			//! enum S_size_trigger_list {SORT_BY_NAME = 1, SORT_BY_SIZE = 2,  SORT_BY_TIME = 3};
+			//! Ну і де решта опцій?
 
+			
+            if ((elm.substr(6, 2) == "=N") || (elm.size() == 6)) { //! size()? WTF?!
+                S_size_trigger = 1;
+			}
+
+            else if (elm.substr(6, 2) == "=S") {
+                S_size_trigger = 2;
+            }
+
+            else if (elm.substr(6, 2) == "=t") {
+                S_size_trigger = 3;
+            }
+
+        }
+
+        else if (elm == "-r") {
+            r_trigger = 1;
+        }
+        else if ((elm == "-h") || (elm == "--help")) {
+            return ls_help();
+
+        }else if (elm != "mls"){ //! Не бачу сенсу на власне ім'я перевіряти... Краще почати цикл з 1 і все.
+            error_trigger = 1;
+        }
+    }
+
+	//! Думаю, це варто робити перед циклом. Або opendir після нього -- якщо Ви про help
+	//! турбуєтеся. Швидше таки -- opendir після циклу, щоб не смикати ОС, якщо опції некоректні.
     if(NULL == dp)
     {
         printf("\n ERROR : Could not open the working directory\n");
@@ -165,10 +176,8 @@ int main(int num, char** argv){
     else{
 
         vector<string> dirlist;
-        if (error_trigger == 2) {
-            cout << "Directory name should begin with '/'";
-            return -1;
-        }
+
+		//! Це теж варто вище перенести, думаю.
         if (error_trigger == 1){
             cout<<"ls: invalid option -- \n"
             "Try 'ls --help' for more information."<<endl;
@@ -179,12 +188,15 @@ int main(int num, char** argv){
             for(count = 0; NULL != (dptr = readdir(dp)); count++) {
 
                 if(dptr->d_name[0] != '.') {
-
+					
+					size_t pointer = strlen(dptr->d_name); //! УВАГА -- замість коду нижче
+					/*
                     int pointer = 0;
-                    while (dptr->d_name[pointer]) {
+                    while (dptr->d_name[pointer] != NULL) {
                         pointer++;
                     }
-
+					*/
+					//! УВАГА: щось Ви дивне тут робите... Розкажіть но мені, що саме?
                     if (pointer > mask_trigger.size()) {
                         string str;
                         str.append(dptr->d_name, pointer-mask_trigger.size(), pointer);
@@ -219,24 +231,30 @@ int main(int num, char** argv){
             }
         }
 
-
         if (l_trigger == 1)  {
-            if (r_trigger ==1) {                   //SET UP REVERSE=TRUE
-                for (int el= (int) (dirlist.size() - 1); el >= 0 ; el++) {
+            if (r_trigger == 1) {                   //SET UP REVERSE=TRUE
+                for (int el= (int) (dirlist.size() - 1); el >= 0 ; el++) { //! el++?!
                     f_properties(dirlist[el].data());
                 }
+				//! Варіант вирішити проблему із інтом:
+				/*
+				for (size_t el= dirlist.size(); el > 0 ; el++) {
+                    f_properties(dirlist[el-1].data());
+                }
+				*/
+				//! Бо size_t -- беззнаковий і справді завжди >=0 за означенням.
+
             }
             else {                                  //SET UP REVERSE=FALSE
-                for (int el=0; el <dirlist.size() ; el++) {
+                for (size_t el=0; el <dirlist.size() ; el++) { 
                     f_properties(dirlist[el].data());
                 }
             }
         }
 
         else if (l_trigger == 0) {
-
-            if (r_trigger==0) {                    //SET UP REVERSE=FALSE
-                for (int el=0; el < dirlist.size(); el++) {
+            if (r_trigger == 0) {                    //SET UP REVERSE=FALSE
+                for (size_t el=0; el < dirlist.size(); el++) {
                     cout << dirlist[el] << endl;
                 }
             }

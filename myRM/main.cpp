@@ -24,8 +24,8 @@ bool findR(int numOfArgv, char** argvFindF){
 
 }
 
-bool findDir(char* fileForCheckingDir){
-        DIR *dir = opendir((const char *) fileForCheckingDir);
+bool findDir(const char* fileForCheckingDir){
+        DIR *dir = opendir(fileForCheckingDir);
     return dir != NULL;
 
 }
@@ -61,7 +61,11 @@ int main(int num, char** argv){
                 "mrm -R name_Of_Folder_or_File -- will remove your folder (even if it isn't empty) "
                 "file with asking the permission."<<endl;
     }
-
+	
+	//! УВАГА! Структура коду потворна -- просканувати опції слід на початку, зберегти у якихось 
+	//! прапорцях, а вже потім  -- використовувати їх. Імена файлів, отримані при тому, скласти окремо. 
+	//! Див, наприклад mls (там не ідеально, але таки краще).
+	//! Плюс, копіпасти стільки...
     else if (findF(num, argv)&&findR(num, argv)) {
         int iterWithFR = globalIterOfArgv;
         while(iterWithFR != num){

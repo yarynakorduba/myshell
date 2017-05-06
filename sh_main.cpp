@@ -8,15 +8,20 @@
 #include <vector>
 #include <boost/bind.hpp>
 
+#include "sh_tools.h"
 
 using namespace std;
 
 int mpwd(char** argv){
     if(argv[1] == NULL){
-        cout << get_current_dir_name();
+        cout << my_get_current_dir_name();
     }else if((string(argv[1])=="-h")||(string(argv[1])=="--help")){
         cout<<"Display current directory"<<endl;
-    }
+    }else		
+	{
+		cerr << "Bad pwd option. Usage: [Тут лінь писати -- самі працюйте.]" << endl;
+		return 1; // Error
+	}
 
     return 0;
 }
@@ -100,18 +105,18 @@ void globalHelp(){
 
 int main(int argc, char* argv[], char**env)
 {
-    chdir("/usr/bin");
+    //! chdir("/usr/bin");
 
     while(true)  {
 
         int i = 0;
-        cout << get_current_dir_name() << "$ ";
-        char command[128];
-        cin.getline( command, 128 );
-
+        cout << my_get_current_dir_name() << "$ ";
+		const size_t buf_size = 4096;
+        char command[buf_size]; //! УВАГА -- суть змін зрозуміла? Ну і -- не жаднічайте.
+        cin.getline( command, buf_size );
 
         vector<char*> args;
-        char* prog = strtok( command, " " );
+        char* prog = strtok( command, " " ); //! strtok краще уникати... Вона має глобальний стан.
         char* tmp = prog;
 
         if(tmp == NULL){
@@ -127,15 +132,17 @@ int main(int argc, char* argv[], char**env)
             tmp = strtok( NULL, " " );
         }
 
-        char** argv = args.data();
 
+		args.push_back( NULL ); //! В C++ краще використовувати nullptr.
+        //argv[args.size()] = NULL; //! УВАГА Невизначена поведінка! Тамнемає такого елемента!
+		
+        char** argv = args.data(); //! Цей вказівник коректний лише поки args не змінювали. Тому після push_back 
 
-        argv[args.size()] = NULL;
-
-        if ((string(prog)=="mpwd")){
+		string progname(prog); //! Просто оптимізація
+        if ( progname=="mpwd" ){ 
             mpwd(argv);
         }
-        else if((string(prog)=="mcd")) {
+        else if( progname=="mcd" ) {
             mcd(argv);
         }
         else if((string(prog)=="mexit")) {
@@ -160,7 +167,8 @@ int main(int argc, char* argv[], char**env)
                 int err = execvp (prog, argv);
                 if(err == -1)
                 {
-                    printf("Err: %i : %s\n", errno, strerror(errno));
+					// Progname printed just for better diagnostic.
+                    printf("Err: %i : %s\n\t Name: %s\n", errno, strerror(errno), prog); 
                 }
                 // The following lines should not happen (normally).
                 //perror( command );

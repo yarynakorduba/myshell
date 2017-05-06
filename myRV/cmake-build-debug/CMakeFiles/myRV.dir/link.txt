@@ -1,1 +1,0 @@
-/usr/bin/c++   -g   CMakeFiles/myRV.dir/main.cpp.o  -o myRV  -L/usr/local/include/boost -lboost_filesystem -lboost_system -Wl,-rpath,/usr/local/include/boost 
