@@ -7,16 +7,10 @@
 #include <cstring>
 #include <vector>
 #include <boost/bind.hpp>
-#include <sys/stat.h>
-#include <fstream>
-#include <errno.h>
 
 #include "sh_tools.h"
 
 using namespace std;
-
-#define PATH_MAX 4096
-
 
 int mpwd(char** argv){
     if(argv[1] == NULL){
@@ -51,16 +45,60 @@ int mcd(char** argv){
     }
     return 0;
 }
-void mexit(char** argv){
-    if((string(argv[1])=="-h")||(string(argv[1])=="--help")){
-        cout<<"mexit will finish your program"<<endl;
+void mexit(char** argv, int num){
+    if(num != 1){
+        if((string(argv[1])=="-h")||(string(argv[1])=="--help")){
+            cout<<"mexit will finish your program"<<endl;
 
-    } else{
-        int castInputToInt;
-        stringstream ss(argv[1]);
-        ss >> castInputToInt;
-        exit(castInputToInt);
+        }else{
+            int castInputToInt;
+            stringstream ss(argv[1]);
+            ss >> castInputToInt;
+            exit(castInputToInt);
+        }
+    }else{
+        exit(0);
     }
+}
+void globalHelp(){
+    cout<<"You can use the following commands: \n"
+            "\n"
+            "mrm\n"
+            "\n"
+            "The order of the arguments is not significant \n"
+            "\n"
+            "Examples and explaining: \n"
+            "\n"
+            "mrm -f -R name_Of_Folder_or_File -- will remove your folder(even if it isn't empty) or file "
+            "without asking the permission. \n"
+            "mrm -f name_Of_File -- will remove only your file without asking the permission. Can't remove folder. \n"
+            "mrm name_Of_File -- will remove only your file with asking the permission. Can't remove folder. \n"
+            "mrm -R name_Of_Folder_or_File -- will remove your folder (even if it isn't empty) "
+            "file with asking the permission.\n"
+            "\n"
+            "mrv\n"
+            "\n"
+            "The order of the arguments is not significant \n"
+            "\n"
+            "Examples and explaining: \n"
+            "\n"
+            "mrv current_name_of_file desired_name_of_file -- will rename your file with asking the permission if "
+            "file that has the same name as desired_name_of_file already exist\n"
+            "mrv -f current_name_of_file desired_name_of_file -- will rename your file without asking the permission if "
+            "file that has the same name as desired_name_of_file already exist\n"
+            "mrv current_name_of_file name_of_directory -- will remove your file to the desired directory "
+            "with asking the permission if file already exist in this directory\n"
+            "mrv -f current_name_of_file name_of_directory -- will remove your file to the desired directory "
+            "without asking the permission if file already exist in this directory\n"
+            "\n"
+            "mmkdir\n"
+            "\n"
+            "mmkdir will create new directory\n"
+            "\n"
+            "mcp\n"
+            "\n"
+        <<endl;
+
 }
 
 
@@ -107,12 +145,13 @@ int main(int argc, char* argv[], char**env)
         else if( progname=="mcd" ) {
             mcd(argv);
         }
-        else if( progname=="mexit" ) {
-            mexit(argv);
+        else if((string(prog)=="mexit")) {
+            mexit(argv, i);
         }
-		//! УВАГА! Краще переробити через std::set або щось аналогічне. Що це за простирадло...
-        else if( (progname=="mls")||(progname=="mrv")||(progname=="mrm")||
-                (progname=="mmkdir")||(progname=="mcp")){
+        else if((string(prog)=="help")) {
+            globalHelp();
+        }
+        else{
             pid_t kidpid = fork();
 
             if (kidpid < 0)
@@ -123,17 +162,6 @@ int main(int argc, char* argv[], char**env)
             else if (kidpid == 0)
             {
                 // I am the child.
-
-                //const char* a = prog;
-                //const char* b = "/home/yuriy/CLionProjects/myRV/";
-                //const char* b = "";
-                //char* p=new char[strlen(b)+strlen(a)+1];
-                //char* c=new char[strlen(a)+1];
-                //strcat(p,b);
-                //strcat(p,a);
-                //strcpy(c,p);
-                //printf("Name %s\n", a);
-                //printf("Path %s\n", getenv("PATH"));
 
                 //puts(prog);
                 int err = execvp (prog, argv);
@@ -155,9 +183,6 @@ int main(int argc, char* argv[], char**env)
                     return -1;
                 }
             }
-        } else {
-            cout<<argv[0]<<" :command not found"<<endl;
-            //continue;
         }
 
         cout << "\n";

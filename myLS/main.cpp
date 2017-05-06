@@ -91,12 +91,11 @@ void f_properties(const char* filename) {
     cout << filename;
     stat(filename, &attrib);
     foo = gmtime(&(attrib.st_mtime));
-    printf("\ndate of modification: %d/", foo->tm_year+1900); //tm_year gives year from 1900
-    printf("%d/", foo->tm_mon+1); //tm_mon has range (0, 11)
-    printf("%d ", foo->tm_mday);
-    printf("%d:", foo->tm_hour);
-    printf("%d\n", foo->tm_min);
-    printf("Size: %lld bytes\n\n", attrib.st_size); //! Зверніть увагу на %lld -- long long int
+
+	//! Ваш код був, безперечно, оригінальним, але навіщо винаходити велосипеди? ;-)
+	printf("\n%-14lld  ", attrib.st_size); //! Не до інта обрізати, а %lld -- long long int
+    printf("%d/%02d/%02d  ", foo->tm_year+1900, foo->tm_mon+1, foo->tm_mday); //tm_year gives year from 1900
+    printf("%02d:%02d  ", foo->tm_hour, foo->tm_min);
 }
 
 

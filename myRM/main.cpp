@@ -2,7 +2,6 @@
 #include <dirent.h>
 #include <cstring>
 #include <unistd.h>
-#include <wait.h>
 
 
 using namespace std;
@@ -51,21 +50,16 @@ int main(int num, char** argv){
     }
 
     if((string(argv[1]) == "--help")||(string(argv[1]) == "-h")){
-        cout<<"Usage: rm [OPTION]... [FILE]...\n"
-                "Remove (unlink) the FILE(s).\n"
+        cout<<"The order of the arguments is not significant \n"
                 "\n"
-                "  -f, --force           ignore nonexistent files and arguments, never prompt\n"
-                "  -R, --recursive   remove directories and their contents recursively\n"
+                "Examples and explaining: \n"
                 "\n"
-                "By default, rm does not remove directories.  Use the --recursive (-R)\n"
-                "option to remove each listed directory, too, along with all of its contents.\n"
-                "\n"
-                "Note that if you use rm to remove a file, it might be possible to recover\n"
-                "some of its contents, given sufficient expertise and/or time.  For greater\n"
-                "assurance that the contents are truly unrecoverable, consider using shred.\n"
-                "\n"
-                "GNU coreutils online help: <http://w...content-available-to-author-only...g.ua/>\n"
-                "Full documentation at: <http://w...content-available-to-author-only...t.org/software/coreutils/rm>\n";
+                "mrm -f -R name_Of_Folder_or_File -- will remove your folder(even if it isn't empty) or file "
+                "without asking the permission. \n"
+                "mrm -f name_Of_File -- will remove only your file without asking the permission. Can't remove folder. \n"
+                "mrm name_Of_File -- will remove only your file with asking the permission. Can't remove folder. \n"
+                "mrm -R name_Of_Folder_or_File -- will remove your folder (even if it isn't empty) "
+                "file with asking the permission."<<endl;
     }
 	
 	//! УВАГА! Структура коду потворна -- просканувати опції слід на початку, зберегти у якихось 
@@ -77,14 +71,26 @@ int main(int num, char** argv){
         while(iterWithFR != num){
             if ((string(argv[iterWithFR]) == "-f")||(string(argv[iterWithFR]) == "-R")){
                 iterWithFR++;
-            }else{
-                if(FileExistSameDir(argv[iterWithFR]) || findDir(argv[iterWithFR])){
-                        toRemove(argv[iterWithFR]);
-                        iterWithFR++;
-                }else{
-                    cout<<"rm: cannot remove "<<argv[iterWithFR]<<" : No such file or directory"<<endl;
+            }else if (findDir(argv[iterWithFR])){
+                DIR *theFolder = opendir(argv[iterWithFR]);
+                    struct dirent *next_file;
+                    char filepath[256];
+
+                    while ( (next_file = readdir(theFolder)) != NULL )
+                    {
+                        sprintf(filepath, "%s/%s", argv[iterWithFR], next_file->d_name);
+                        remove(filepath);
+                    }
+                    closedir(theFolder);
+                    toRemove(argv[iterWithFR]);
                     iterWithFR++;
-                }
+
+            }else if(FileExistSameDir(argv[iterWithFR])){
+                toRemove(argv[iterWithFR]);
+                iterWithFR++;
+            }else{
+                cout<<"rm: cannot remove "<<argv[iterWithFR]<<" : No such file or directory"<<endl;
+                iterWithFR++;
             }
         }
 
@@ -135,21 +141,42 @@ int main(int num, char** argv){
         while(iterWithR != num){
             if (string(argv[iterWithR]) == "-R"){
                 iterWithR++;
-            }else{
-                if(FileExistSameDir(argv[iterWithR])){
-                    string usrInput;
-                    cout << "Do you wish to delete " << argv[iterWithR] << "?" << "[y/n] ";
-                    getline(cin, usrInput);
-                    if (string(usrInput) == "y") {
-                        toRemove(argv[iterWithR]);
-                        iterWithR++;
-                    }else{
-                        iterWithR++;
+            }else if(findDir(argv[iterWithR])){
+                string usrInput;
+                cout << "Do you wish to delete " << argv[iterWithR] << "?" << "[y/n] ";
+                getline(cin, usrInput);
+                if (string(usrInput) == "y") {
+
+                    DIR *theFolder = opendir(argv[iterWithR]);
+                    struct dirent *next_file;
+                    char filepath[256];
+
+                    while ( (next_file = readdir(theFolder)) != NULL )
+                    {
+                        sprintf(filepath, "%s/%s", argv[iterWithR], next_file->d_name);
+                        remove(filepath);
                     }
+                    closedir(theFolder);
+
+
+                    toRemove(argv[iterWithR]);
+                    iterWithR++;
                 }else{
-                    cout<<"rm: cannot remove "<<argv[iterWithR]<<" : No such file or directory"<<endl;
                     iterWithR++;
                 }
+            }else if(FileExistSameDir(argv[iterWithR])){
+                string usrInput;
+                cout << "Do you wish to delete " << argv[iterWithR] << "?" << "[y/n] ";
+                getline(cin, usrInput);
+                if (string(usrInput) == "y") {
+                    toRemove(argv[iterWithR]);
+                    iterWithR++;
+                }else{
+                    iterWithR++;
+                }
+            } else{
+                cout<<"rm: cannot remove "<<argv[iterWithR]<<" : No such file or directory"<<endl;
+               iterWithR++;
             }
         }
     }

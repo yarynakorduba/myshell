@@ -43,17 +43,25 @@ int main(int num, char** argv){
     int stateOfDir = findDir(num, argv);
 	string cur_dir = my_get_current_dir_name(); // Див. комент щодо цієї ф-ції в myLS
     const char* curr = cur_dir.data();
-    cout<<(string(argv[1]));
-    if((string(argv[1]) == "-h")&&(string(argv[1]) != "--help")) {
-        cout<<"mrv will rename your file if two arguments are old and new name\n"
-                "mrv will remove your program if first argument is the name of file and second is name of directory\n"
-                "mrv -f will remove or rename files without asking for permission if files already exist"
+
+    if((num == 0)||(num == 1)) {
+        cout << "Too few arguments" << endl;
+    }else if((string(argv[1]) == "-h")&&(string(argv[1]) != "--help")) {
+        cout<<"The order of the arguments is not significant \n"
+                "\n"
+                "Examples and explaining: \n"
+                "\n"
+                "mrv current_name_of_file desired_name_of_file -- will rename your file with asking the permission if "
+                "file that has the same name as desired_name_of_file already exist\n"
+                "mrv -f current_name_of_file desired_name_of_file -- will rename your file without asking the permission if "
+                "file that has the same name as desired_name_of_file already exist\n"
+                "mrv current_name_of_file name_of_directory -- will remove your file to the desired directory "
+                "with asking the permission if file already exist in this directory\n"
+                "mrv -f current_name_of_file name_of_directory -- will remove your file to the desired directory "
+                "without asking the permission if file already exist in this directory\n"
             <<endl;
 		//! Вивели хелп і виходимо:
 		return 0;
-
-    }else if((num == 0)||(num == 2)){
-        cout<<"Too few arguments"<<endl;
     }
 	//! УВАГА! Структура коду потворна -- просканувати опції слід на початку, зберегти у якихось 
 	//! прапорцях, а вже потім  -- використовувати їх. Імена файлів, отримані при тому, скласти окремо. 
