@@ -46,7 +46,7 @@ int ls_help() {
 string toStr(char arr[]) {
     int pointer = 0;
 
-    while (arr[pointer] != NULL) {
+    while (arr[pointer]) {
         pointer++;
     }
     std::string str;
@@ -83,7 +83,7 @@ void f_properties(const char* filename) {
     printf("%d ", foo->tm_mday);
     printf("%d:", foo->tm_hour);
     printf("%d\n", foo->tm_min);
-    printf("Size: %d bytes\n\n", attrib.st_size);
+    printf("Size: %d bytes\n\n", (int)attrib.st_size);
 }
 
 
@@ -168,7 +168,7 @@ int main(int num, char** argv){
                 if(dptr->d_name[0] != '.') {
 
                     int pointer = 0;
-                    while (dptr->d_name[pointer] != NULL) {
+                    while (dptr->d_name[pointer]) {
                         pointer++;
                     }
 
