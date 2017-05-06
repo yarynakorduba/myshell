@@ -25,8 +25,8 @@ bool findR(int numOfArgv, char** argvFindF){
 
 }
 
-bool findDir(char* fileForCheckingDir){
-        DIR *dir = opendir((const char *) fileForCheckingDir);
+bool findDir(const char* fileForCheckingDir){
+        DIR *dir = opendir(fileForCheckingDir);
     return dir != NULL;
 
 }
@@ -67,7 +67,11 @@ int main(int num, char** argv){
                 "GNU coreutils online help: <http://w...content-available-to-author-only...g.ua/>\n"
                 "Full documentation at: <http://w...content-available-to-author-only...t.org/software/coreutils/rm>\n";
     }
-
+	
+	//! УВАГА! Структура коду потворна -- просканувати опції слід на початку, зберегти у якихось 
+	//! прапорцях, а вже потім  -- використовувати їх. Імена файлів, отримані при тому, скласти окремо. 
+	//! Див, наприклад mls (там не ідеально, але таки краще).
+	//! Плюс, копіпасти стільки...
     else if (findF(num, argv)&&findR(num, argv)) {
         int iterWithFR = globalIterOfArgv;
         while(iterWithFR != num){

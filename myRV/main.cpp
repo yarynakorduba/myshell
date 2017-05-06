@@ -49,15 +49,24 @@ int main(int num, char** argv){
                 "mrv will remove your program if first argument is the name of file and second is name of directory\n"
                 "mrv -f will remove or rename files without asking for permission if files already exist"
             <<endl;
+		//! Вивели хелп і виходимо:
+		return 0;
 
     }else if((num == 0)||(num == 2)){
         cout<<"Too few arguments"<<endl;
     }
+	//! УВАГА! Структура коду потворна -- просканувати опції слід на початку, зберегти у якихось 
+	//! прапорцях, а вже потім  -- використовувати їх. Імена файлів, отримані при тому, скласти окремо. 
+	//! От як Ваш же stateOfDir.
+	//! Див, також  mls (там не ідеально, але таки краще). 
+	//! Плюс, копіпасти стільки...
+	
     else if (findF(num, argv) && (stateOfDir != -1)){
         int iterOfArgvWithF = globalIterOfArgv;
         while(iterOfArgvWithF != num){
             if((string(argv[iterOfArgvWithF]) != "-f")||(iterOfArgvWithF != stateOfDir)){
-                chdir(curr);
+                chdir(curr); 
+				//! От що за імена?!
                 const char* a = argv[iterOfArgvWithF];
                 const char* b = argv[findDir(num, argv)];
                 const char* d = "/";
