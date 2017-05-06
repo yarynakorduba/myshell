@@ -1,3 +1,0 @@
-/home/yuriy/CLionProjects/myRV/cmake-build-debug/CMakeFiles/edit_cache.dir
-/home/yuriy/CLionProjects/myRV/cmake-build-debug/CMakeFiles/rebuild_cache.dir
-/home/yuriy/CLionProjects/myRV/cmake-build-debug/CMakeFiles/myRV.dir
