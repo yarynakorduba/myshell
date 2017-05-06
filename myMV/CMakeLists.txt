@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.6)
-project(mrv)
+project(mmv)
 
 #set(CMAKE_VERBOSE_MAKEFILE ON)
 
@@ -17,8 +17,8 @@ set(Boost_LIBRARIES boost_filesystem boost_system)
 include_directories(${Boost_INCLUDE_DIR})
 link_directories(${Boost_LIBRARY_DIR})
 
-add_executable(mrv main.cpp  ../sh_tools.cpp ../sh_tools.h)
-target_link_libraries(mrv ${Boost_LIBRARIES} )
+add_executable(mmv main.cpp  ../sh_tools.cpp ../sh_tools.h)
+target_link_libraries(mmv ${Boost_LIBRARIES} )
 
 add_custom_command(TARGET ${PROJECT_NAME}
     POST_BUILD
