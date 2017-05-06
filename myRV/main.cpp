@@ -8,6 +8,8 @@
 #include <list>
 #include <algorithm>
 
+#include "sh_tools.h"
+
 
 using namespace std;
 
@@ -39,7 +41,8 @@ int main(int num, char** argv){
 
     int globalIterOfArgv = 1;
     int stateOfDir = findDir(num, argv);
-    char* curr = get_current_dir_name();
+	string cur_dir = my_get_current_dir_name(); // Див. комент щодо цієї ф-ції в myLS
+    const char* curr = cur_dir.data();
     cout<<(string(argv[1]));
     if((string(argv[1]) == "-h")&&(string(argv[1]) != "--help")) {
         cout<<"mrv will rename your file if two arguments are old and new name\n"

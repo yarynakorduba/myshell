@@ -15,6 +15,8 @@
 //#include <time.h>
 //#include <stdlib.h>
 
+#include "sh_tools.h"
+
 using namespace std;
 
 #define PATH_MAX 4096
@@ -55,7 +57,12 @@ string toStr(char arr[]) {
     return str;
 }
 
-bool mySizeFunction (std::__cxx11::basic_string<char> f1, std::__cxx11::basic_string<char> f2) {
+//! УВАГА
+// Хто і звідки цей жах передер?! Виясніть, що за речовини
+// він чи вона вживає (нюхає? коле?) і більше їх йому не давайте!
+// (Так, я знаю, де автор міг це побачити, але навіщо передер внутрішні назви класів?!)
+//bool mySizeFunction (std::__cxx11::basic_string<char> f1, std::__cxx11::basic_string<char> f2) {
+bool mySizeFunction (std::string f1, std::string f2) {
     struct stat attrib1;
     struct stat attrib2;
     stat(f1.data(), &attrib1);
@@ -63,7 +70,7 @@ bool mySizeFunction (std::__cxx11::basic_string<char> f1, std::__cxx11::basic_st
     return (attrib1.st_size > attrib2.st_size);
 }
 
-bool myMtimeFunction(std::__cxx11::basic_string<char> f1, std::__cxx11::basic_string<char> f2) {
+bool myMtimeFunction(std::string f1, std::string f2) {
     struct stat attrib1;
     struct stat attrib2;
     stat(f1.data(), &attrib1);
@@ -88,11 +95,16 @@ void f_properties(const char* filename) {
 
 
 int main(int num, char** argv){
-    char* curr_dir = get_current_dir_name();
     DIR *dp = NULL;
     struct dirent *dptr = NULL;
     unsigned int count = 0;
-    dp = opendir((const char*)curr_dir);
+    dp = opendir( my_get_current_dir_name().data() ); //! УВАГА -- string, що повернула ф-ці
+				// повинен прожити довше, ніж той, хто користується вказівником, 
+				// повернутим data(), тому варіант: 
+				// const char* curr_dir = my_get_current_dir_name().data();
+				// dp = opendir( curr_dir );
+				// буде невірним!
+
 
     string mask_trigger(" ");            //TRIGGER FOR EXTENTIONS
     int l_trigger = 0;                        //TRIGGER FOR PROPERTIES

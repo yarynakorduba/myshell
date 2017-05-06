@@ -11,13 +11,16 @@
 #include <fstream>
 #include <errno.h>
 
+#include "sh_tools.h"
+
 using namespace std;
 
 #define PATH_MAX 4096
 
+
 int mpwd(char** argv){
     if(argv[1] == NULL){
-        cout << get_current_dir_name();
+        cout << my_get_current_dir_name();
     }else if((string(argv[1])=="-h")||(string(argv[1])=="--help")){
         cout<<"Display current directory"<<endl;
     }
@@ -65,7 +68,7 @@ int main(int argc, char* argv[], char**env)
     while(true)  {
 
         int i = 0;
-        cout << get_current_dir_name() << "$ ";
+        cout << my_get_current_dir_name() << "$ ";
         char command[128];
         cin.getline( command, 128 );
 
