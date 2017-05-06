@@ -10,12 +10,11 @@ inline bool exists_test2 (const std::string& name) {
 }
 
 int main(int num, char **argv) {
-    //                                                     cout<<argv[1]<<endl;
+
         if(num == 1){
-            cout<<"mkdir: missing operand"<<"\n"<<
-                "Try 'mkdir --help' for more information."<<endl;
+            cout<<"mmkdir: missing operand"<<"\n"<<
+                "Try 'mmkdir --help or mmkdir -h' for more information."<<endl;
         }else{
-            //const char* curr = get_current_dir_name();
             int i = 1;
             while (i != num){
                 if(exists_test2(argv[i]) == 1){
@@ -30,8 +29,6 @@ int main(int num, char **argv) {
                 }
             }
         }
-
-
-
+    
         return 0;
 }
