@@ -55,6 +55,12 @@ string toStr(char arr[]) {
     return str;
 }
 
+bool is_dir(const char* path) {
+    struct stat buf;
+    stat(path, &buf);
+    return S_ISDIR(buf.st_mode);
+}
+
 bool mySizeFunction (std::__cxx11::basic_string<char> f1, std::__cxx11::basic_string<char> f2) {
     struct stat attrib1;
     struct stat attrib2;
@@ -109,7 +115,6 @@ int main(int num, char** argv){
 
             string elm(" ");
             elm = argv[i];
-            cout<<elm<<endl;
 
             if (elm == "-l") {
                 l_trigger = 1;
@@ -141,11 +146,12 @@ int main(int num, char** argv){
                 r_trigger = 1;
             }
             else if ((elm == "-h") || (elm == "--help")) {
-                return ls_help();
+                return ls_help();}
 
+            else if (is_dir(('/' + elm).c_str())) {
+                error_trigger = 2;
             }else if (elm != "mls"){
                 error_trigger = 1;
-
 
             }
         }
@@ -159,7 +165,10 @@ int main(int num, char** argv){
     else{
 
         vector<string> dirlist;
-
+        if (error_trigger == 2) {
+            cout << "Directory name should begin with '/'";
+            return -1;
+        }
         if (error_trigger == 1){
             cout<<"ls: invalid option -- \n"
             "Try 'ls --help' for more information."<<endl;
