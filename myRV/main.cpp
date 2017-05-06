@@ -40,15 +40,24 @@ int main(int num, char** argv){
     int globalIterOfArgv = 1;
     int stateOfDir = findDir(num, argv);
     char* curr = get_current_dir_name();
-    cout<<(string(argv[1]));
-    if((string(argv[1]) == "-h")&&(string(argv[1]) != "--help")) {
-        cout<<"mrv will rename your file if two arguments are old and new name\n"
-                "mrv will remove your program if first argument is the name of file and second is name of directory\n"
-                "mrv -f will remove or rename files without asking for permission if files already exist"
+
+    if((num == 0)||(num == 1)) {
+        cout << "Too few arguments" << endl;
+    }else if((string(argv[1]) == "-h")&&(string(argv[1]) != "--help")) {
+        cout<<"The order of the arguments is not significant \n"
+                "\n"
+                "Examples and explaining: \n"
+                "\n"
+                "mrv current_name_of_file desired_name_of_file -- will rename your file with asking the permission if "
+                "file that has the same name as desired_name_of_file already exist\n"
+                "mrv -f current_name_of_file desired_name_of_file -- will rename your file without asking the permission if "
+                "file that has the same name as desired_name_of_file already exist\n"
+                "mrv current_name_of_file name_of_directory -- will remove your file to the desired directory "
+                "with asking the permission if file already exist in this directory\n"
+                "mrv -f current_name_of_file name_of_directory -- will remove your file to the desired directory "
+                "without asking the permission if file already exist in this directory\n"
             <<endl;
 
-    }else if((num == 0)||(num == 2)){
-        cout<<"Too few arguments"<<endl;
     }
     else if (findF(num, argv) && (stateOfDir != -1)){
         int iterOfArgvWithF = globalIterOfArgv;
