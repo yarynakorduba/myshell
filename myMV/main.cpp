@@ -38,13 +38,28 @@ int findDir(int numOfArgv, char** argvFindDir){
     return -1;
 }
 int main(int num, char** argv){
-
     int globalIterOfArgv = 1;
     int stateOfDir = findDir(num, argv);
-	string cur_dir = my_get_current_dir_name(); // Див. комент щодо цієї ф-ції в myLS
-    const char* curr = cur_dir.data();
+    char* curr = get_current_dir_name();
+    int moveFilesWithoutF = 0;
+    int moveFilesWithF = 0;
+    int renameTwoFilesWithF = 0;
+    int renameTwoFilesWithoutF = 0;
+    int renameDir = 0;
 
-    if((num == 0)||(num == 1)) {
+    if(findF(num, argv) && (stateOfDir != -1)){
+        moveFilesWithoutF = 1;
+    }else if(!findF(num, argv) && (stateOfDir != -1) && (num!=3)){
+        moveFilesWithF = 1;
+    }else if(findF(num, argv) && (stateOfDir == -1) && (num == 4)){
+        renameTwoFilesWithF = 1;
+    }else if(!findF(num, argv) &&(stateOfDir == -1) &&(num == 3)){
+        renameTwoFilesWithoutF = 1;
+    }else if((stateOfDir != -1) && (num == 3)){
+        renameDir = 1;
+    }
+
+    if((num == 1)||(num == 2)) {
         cout << "Too few arguments" << endl;
     }else if((string(argv[1]) == "-h")&&(string(argv[1]) != "--help")) {
         cout<<"The order of the arguments is not significant \n"
@@ -60,21 +75,14 @@ int main(int num, char** argv){
                 "mrv -f current_name_of_file name_of_directory -- will remove your file to the desired directory "
                 "without asking the permission if file already exist in this directory\n"
             <<endl;
-		//! Вивели хелп і виходимо:
-		return 0;
+            return 0;
+
     }
-	//! УВАГА! Структура коду потворна -- просканувати опції слід на початку, зберегти у якихось 
-	//! прапорцях, а вже потім  -- використовувати їх. Імена файлів, отримані при тому, скласти окремо. 
-	//! От як Ваш же stateOfDir.
-	//! Див, також  mls (там не ідеально, але таки краще). 
-	//! Плюс, копіпасти стільки...
-	
-    else if (findF(num, argv) && (stateOfDir != -1)){
+    else if (moveFilesWithoutF){
         int iterOfArgvWithF = globalIterOfArgv;
         while(iterOfArgvWithF != num){
             if((string(argv[iterOfArgvWithF]) != "-f")||(iterOfArgvWithF != stateOfDir)){
-                chdir(curr); 
-				//! От що за імена?!
+                chdir(curr);
                 const char* a = argv[iterOfArgvWithF];
                 const char* b = argv[findDir(num, argv)];
                 const char* d = "/";
@@ -90,7 +98,7 @@ int main(int num, char** argv){
             iterOfArgvWithF++;
             }
         }
-    }else if (!findF(num, argv) && (stateOfDir != -1)){
+    }else if (moveFilesWithF){
         int iterOfArgvWithOutF = globalIterOfArgv;
         while(iterOfArgvWithOutF != num){
             if(iterOfArgvWithOutF != stateOfDir){
@@ -140,7 +148,7 @@ int main(int num, char** argv){
                 iterOfArgvWithOutF++;
             }
         }
-    }else if (findF(num, argv) && (stateOfDir == -1) && (num == 4)){
+    }else if (renameTwoFilesWithF){
 
         int iterOfArgvRenameWithF = globalIterOfArgv;
         vector<const char *> argsOfRename;
@@ -158,29 +166,30 @@ int main(int num, char** argv){
             cout << "File " << argsOfRename[0] << " does not exist"<<endl;
         }
 
-    }else if (!findF(num, argv) && (stateOfDir == -1) && (num == 3)){
-        int iterOfArgvRenameWithOutF = globalIterOfArgv;
-        vector<const char *> argsOfRename;
-        while(iterOfArgvRenameWithOutF != num){
-            if((string(argv[iterOfArgvRenameWithOutF]) != "-f")){
-                argsOfRename.push_back((const char *&&) argv[iterOfArgvRenameWithOutF]);
-                iterOfArgvRenameWithOutF++;
-            }else{
-                iterOfArgvRenameWithOutF++;
-            }
-        } if(FileExistSameDir(argsOfRename[0]) != 1){
-            cout << "File " << argsOfRename[0] << " does not exist"<<endl;
-        } else if(FileExistSameDir(argsOfRename[1]) == 1){
+    }else if (renameTwoFilesWithoutF){
+
+         if(FileExistSameDir(argv[1]) != 1){
+            cout << "File " << argv[1] << " does not exist"<<endl;
+        } else if(FileExistSameDir(argv[2]) == 1){
             string usrInput;
-            cout << "File " << argsOfRename[1] << " already exist. Do you want to rewrite it [y/n]  ";
+            cout << "File " << argv[2] << " already exist. Do you want to rewrite it [y/n]  ";
             getline(cin, usrInput);
             if (string(usrInput) == "y") {
-                rename(argsOfRename[0], argsOfRename[1]);
+                rename(argv[1], argv[2]);
             }
-        } else{
-            rename(argsOfRename[0], argsOfRename[1]);
         }
-    }else{
+    }else if (renameDir){
+        DIR *dir = opendir((const char *) argv[1]);
+
+        if(dir != NULL){
+            rename(argv[1], argv[2]);
+        }else {
+            cout << "Directory " << argv[1] << " does not exist"<<endl;
+        }
+
+    }
+
+    else{
         cout<<"No such directory"<<endl;
     }
 
