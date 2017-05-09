@@ -147,7 +147,7 @@ inline bool FileExistSameDir (const std::string& name) {
 
 int main(int argc, char* argv[], char**env)
 {
-    chdir("/usr/bin");
+    //chdir("/usr/bin");
 
     while(true)  {
 
