@@ -24,8 +24,8 @@ bool findR(int numOfArgv, char** argvFindF){
 
 }
 
-bool findDir(const char* fileForCheckingDir){
-        DIR *dir = opendir(fileForCheckingDir);
+bool findDir(char* fileForCheckingDir){
+        DIR *dir = opendir((const char *) fileForCheckingDir);
     return dir != NULL;
 
 }
@@ -44,6 +44,21 @@ void toRemove(const char* data) {
 int main(int num, char** argv){
     int globalIterOfArgv = 1;
 
+    int deleteDirectoryWithF = 0;
+    int deleteFileWithF = 0;
+    int deleteFile = 0;
+    int deleteDirectoryWithoutF = 0;
+
+    if(findF(num, argv)&&findR(num, argv)){
+        deleteDirectoryWithF = 1;
+    }else if(findF(num, argv)&&!findR(num, argv)){
+        deleteFileWithF = 1;
+    }else if(!findF(num, argv)&&!findR(num, argv)){
+        deleteFile = 1;
+    }else if(!findF(num, argv)&&findR(num, argv)){
+        deleteDirectoryWithoutF = 1;
+    }
+
     if (num == 1){
         cout << "missing operand" << endl;
         return 1;
@@ -60,13 +75,10 @@ int main(int num, char** argv){
                 "mrm name_Of_File -- will remove only your file with asking the permission. Can't remove folder. \n"
                 "mrm -R name_Of_Folder_or_File -- will remove your folder (even if it isn't empty) "
                 "file with asking the permission."<<endl;
+        return 0;
     }
-	
-	//! УВАГА! Структура коду потворна -- просканувати опції слід на початку, зберегти у якихось 
-	//! прапорцях, а вже потім  -- використовувати їх. Імена файлів, отримані при тому, скласти окремо. 
-	//! Див, наприклад mls (там не ідеально, але таки краще).
-	//! Плюс, копіпасти стільки...
-    else if (findF(num, argv)&&findR(num, argv)) {
+
+    else if (deleteDirectoryWithF) {
         int iterWithFR = globalIterOfArgv;
         while(iterWithFR != num){
             if ((string(argv[iterWithFR]) == "-f")||(string(argv[iterWithFR]) == "-R")){
@@ -95,7 +107,7 @@ int main(int num, char** argv){
         }
 
     }
-    else if(findF(num, argv)&&!findR(num, argv)) {
+    else if(deleteFileWithF) {
         int iterWithF = globalIterOfArgv;
         while(iterWithF != num){
             if (string(argv[iterWithF]) == "-f"){
@@ -114,7 +126,7 @@ int main(int num, char** argv){
                 }
             }
         }
-    }else if(!findF(num, argv)&&!findR(num, argv)){
+    }else if(deleteFile){
         int iterWithout = globalIterOfArgv;
         while(iterWithout != num){
             if(FileExistSameDir(argv[iterWithout])&&!findDir(argv[iterWithout])){
@@ -136,7 +148,7 @@ int main(int num, char** argv){
             }
 
         }
-    }else if(!findF(num, argv)&&findR(num, argv)){
+    }else if(deleteDirectoryWithoutF){
         int iterWithR = globalIterOfArgv;
         while(iterWithR != num){
             if (string(argv[iterWithR]) == "-R"){
